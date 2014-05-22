@@ -30,7 +30,7 @@ class FullCalendarAsset extends AssetBundle
      */
     public function init()
     {
-        $this->js = ['fullcalendar.js', 'jquery-ui.custom.min.js'];
+        $this->js = ['lib/jquery-ui.custom.min.js', 'lib/moment.min.js', 'fullcalendar.js', 'lang/pt-br.js'];
         $this->css = ['fullcalendar.css'];
         $this->sourcePath = __DIR__ . '/../assets';
         parent::init();

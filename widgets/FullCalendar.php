@@ -35,7 +35,7 @@ class FullCalendar extends Widget
     public $depends = [];
     public $bootstrap = [];
     public $avoidEmpty = true;
-    public $loading = [];
+    public $loading = 'Loading...';
     public $clearChildren = true;
 
     /**
@@ -53,13 +53,6 @@ class FullCalendar extends Widget
     public function init()
     {
         parent::init();
-        if (empty($this->url)) {
-            //throw new InvalidConfigException('The "url" property must be set.');
-        //} elseif (empty($this->varName)) {
-        //    throw new InvalidConfigException('The "varName" property must be set.');
-        } elseif (empty($this->parents)) {
-            //throw new InvalidConfigException('The "parents" property must be set.');
-        }
     }
 
     /**
@@ -68,21 +61,16 @@ class FullCalendar extends Widget
     public function run()
     {
         $this->registerClientScript();
-/*
+
         $this->options['data-plugin-name'] = $this->_pluginName;
         $this->options['data-plugin-options'] = $this->hashOptions;
-        $this->options['data-chained'] = $this->attribute ?: $this->name;
 
-        Html::addCssClass($this->options, 'form-control');
+        Html::addCssClass($this->options, 'fullcalendar');
 
-        if ($this->hasModel()) {
-            echo Html::activeDropDownList($this->model, $this->attribute, $this->bootstrap, $this->options);
-        } else {
-            echo Html::dropDownList($this->name, $this->value, $this->bootstrap, $this->options);
-        }*/
-
-
+        echo '<div id="container_' . $this->options['id'] . '">';
+        echo '<div class="fullcalendar-loading" style="display: none;">' . $this->loading . '</div>';
         echo Html::tag('div', '', $this->options);
+        echo '</div>';
     }
 
     /**
@@ -105,71 +93,71 @@ class FullCalendar extends Widget
      */
     protected function getClientOptions()
     {
+        $id = $this->options['id'];
+
         //$options['editable'] = true;
-        $options['events'] = "/json-events.php";
-        $options['defaultView'] = 'agendaWeek';
-        $options['allDaySlot'] = false;
-        $options['axisFormat'] = 'H:mm';
-        $options['timeFormat'] = 'H:mm{ - H:mm}';
-        $options['eventDrop'] = new JsExpression("function(event, delta) {
-            alert(event.title + ' was moved ' + delta + ' days (should probably update your database)');
-        }");
-
-        $options['monthNames'] = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-        $options['monthNamesShort'] = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-        $options['dayNames'] = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-        $options['dayNamesShort'] = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-
-        $options['buttonText'] = [
-            'today' =>  'hoje',
-            'month' => 'mês',
-            'week' => 'semana',
-            'day' => 'dia'
-	    ];
+        //$options['events'] = "/agenda/json/10";
+        //$options['eventSources'] = ["/json-events.php"];
+        /*$options['eventSources'] = [
+            ['url' => '/json-events.php', 'color' => 'green'],
+            ['url' => '/json-events2.php', 'color' => 'orange']
+        ];*/
         $options['header'] = [
             'left' => 'prev,next today',
-            'right' => 'month,agendaWeek,agendaDay'
+            'right' => 'month,agendaWeek,agendaDay',
+            'center' => 'title'
         ];
-        $options['columnFormat'] = [
-            'month' => 'ddd',
-            'week' => 'ddd d/M',
-            'day' => 'dddd d/M'
+        $options['titleFormat'] = [
+            'month' => 'MMMM - YYYY',
+            'week' => 'MMMM - YYYY',
+            'day' => 'd [de] MMMM - YYYY'
         ];
-
-        $options['slotMinutes'] = 15;
-        $options['snaptMinutes'] = 5;
-        $options['selectable'] = true;
+        $options['defaultView'] = 'agendaWeek';
+        $options['allDaySlot'] = false;
+        //$options['allDayDefault'] = false;
+        $options['slotDuration'] = '00:15:00';
+        $options['snaptDuration'] = '00:05:00';
+        $options['axisFormat'] = 'H:mm';
+        $options['selectable'] = [
+            'month' => false,
+            'default' => true
+        ];
+        //$options['unselectAuto'] = false;
+        $options['unselectCancel'] = 'body';
         $options['selectHelper'] = true;
-        $options['minTime'] = 8;
-        $options['maxTime'] = 19;
+        $options['scrollTime'] = "08:00:00";
+        //$options['minTime'] = "08:00:00";
+        //$options['maxTime'] = "19:00:00";
+        $options['defaultTimedEventDuration'] = "00:15:00";
 
-        $this->view->registerJs("
-            var update_campos = function(start, end) {
-				$('#agendamentoservico-data').val($.fullCalendar.formatDate(start, 'dd/MM/yyyy'));
-				$('#agendamentoservico-horario').val($.fullCalendar.formatDate(start, 'HH:mm'));
-				$('#agendamentoservico-minduracao').val((end - start)/60000);
-            };
-        ", View::POS_HEAD);
+        $options['dayClick'] = new JsExpression("function(date, jsEvent, view) {
+            if (view.name == 'month') {
+                calendar_{$id}.fullCalendar('gotoDate', date);
+                calendar_{$id}.fullCalendar('changeView', 'agendaWeek');
+            }
+        }");
 
-        $options['select'] = new JsExpression("function(start, end, allDay) {
-				console.log([start, end, allDay]);
-				update_campos(start, end);
-			}");
-        $options['eventResize'] = new JsExpression("function(event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view) {
-				console.log([event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view]);
-			}");
-        $options['dayClick'] = new JsExpression("function(date, allDay, jsEvent, view) {
-				calendar_{$this->options['id']}.fullCalendar('gotoDate', date);
-				$.fullCalendar.formatDate('changeView', 'agendaDay');
-				return false;
-			}");
+        $options['eventMouseover'] = new JsExpression("function(event, jsEvent, view) {
+            //console.log([this, event, jsEvent, view]);
+            //$(this).popover('show', {trigger: 'manual', content: 'ttt'});
+        }");
 
+        $options['select'] = new JsExpression("function(start, end, jsEvent, view) {
+				if (jsEvent) {
+				    calendar_{$id}.trigger('fullcalendar.select', [start, end]);
+                }
+        }");
 
-        /*$options['header'] = [
-        'left' => 'prev,next today',
-				'center' => 'title',
-				'right' => 'month,agendaWeek,agendaDay'
-		];*/
+        $options['eventRender'] = new JsExpression("function(event, element) {
+                element.popover({
+                    content: event.title,
+                    trigger: 'hover'
+                });
+        }");
+
+        $options['loading'] = new JsExpression("function(isLoading, view ) {
+                $('#container_{$id}').find('.fullcalendar-loading').toggle(isLoading);
+        }");
 
         $options = array_merge($options, $this->config);
         return Json::encode($options);
