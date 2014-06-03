@@ -13,7 +13,6 @@ use yii\bootstrap\Widget;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\web\JsExpression;
-use yii\web\View;
 
 /**
  * Talma FullCalendar widget is a Yii2 wrapper for the FullCalendar.
@@ -29,31 +28,25 @@ class FullCalendar extends Widget
      */
     public $config = [];
 
-    public $url;
-    public $varName;
-    public $parents = [];
-    public $depends = [];
-    public $bootstrap = [];
-    public $avoidEmpty = true;
+    /**
+     * @var string Text for loading alert
+     */
     public $loading = 'Loading...';
-    public $clearChildren = true;
 
     /**
-     * @var string Hash of plugin options
+     * @var boolean If the plugin displays a Google Calendar.
      */
-    public $hashOptions;
+    public $googleCalendar = false;
 
+    /**
+     * @var string Hash of config options
+     */
+    private $_hashOptions;
+
+    /**
+     * @var string Name of the plugin
+     */
     private $_pluginName = 'fullcalendar';
-
-
-    /**
-     * Initializes the widget.
-     * @throws InvalidConfigException if the "mask" property is not set.
-     */
-    public function init()
-    {
-        parent::init();
-    }
 
     /**
      * Runs the widget.
@@ -63,7 +56,7 @@ class FullCalendar extends Widget
         $this->registerClientScript();
 
         $this->options['data-plugin-name'] = $this->_pluginName;
-        $this->options['data-plugin-options'] = $this->hashOptions;
+        $this->options['data-plugin-options'] = $this->_hashOptions;
 
         Html::addCssClass($this->options, 'fullcalendar');
 
@@ -79,12 +72,18 @@ class FullCalendar extends Widget
     public function registerClientScript()
     {
         $options = $this->getClientOptions();
-        $this->hashOptions = $this->_pluginName . '_' . hash('crc32', serialize($options));
+        $this->_hashOptions = $this->_pluginName . '_' . hash('crc32', serialize($options));
         $id = $this->options['id'];
         $view = $this->getView();
-        $view->registerJs("var {$this->hashOptions} = {$options};\nvar calendar_{$this->options['id']};", $view::POS_HEAD);
-        $js = "calendar_{$this->options['id']} = jQuery(\"#{$id}\").fullCalendar({$this->hashOptions});";
-        FullCalendarAsset::register($view);
+        $view->registerJs("var {$this->_hashOptions} = {$options};\nvar calendar_{$this->options['id']};", $view::POS_HEAD);
+        $js = "calendar_{$this->options['id']} = jQuery(\"#{$id}\").fullCalendar({$this->_hashOptions});";
+        $asset = FullCalendarAsset::register($view);
+        if (isset($this->config['lang'])) {
+            $asset->language = $this->config['lang'];
+        }
+        if ($this->googleCalendar) {
+            $asset->googleCalendar = $this->googleCalendar;
+        }
         $view->registerJs($js);
     }
 
@@ -94,66 +93,6 @@ class FullCalendar extends Widget
     protected function getClientOptions()
     {
         $id = $this->options['id'];
-
-        //$options['editable'] = true;
-        //$options['events'] = "/agenda/json/10";
-        //$options['eventSources'] = ["/json-events.php"];
-        /*$options['eventSources'] = [
-            ['url' => '/json-events.php', 'color' => 'green'],
-            ['url' => '/json-events2.php', 'color' => 'orange']
-        ];*/
-        $options['header'] = [
-            'left' => 'prev,next today',
-            'right' => 'month,agendaWeek,agendaDay',
-            'center' => 'title'
-        ];
-        $options['titleFormat'] = [
-            'month' => 'MMMM - YYYY',
-            'week' => 'MMMM - YYYY',
-            'day' => 'd [de] MMMM - YYYY'
-        ];
-        $options['defaultView'] = 'agendaWeek';
-        $options['allDaySlot'] = false;
-        //$options['allDayDefault'] = false;
-        $options['slotDuration'] = '00:15:00';
-        $options['snaptDuration'] = '00:05:00';
-        $options['axisFormat'] = 'H:mm';
-        $options['selectable'] = [
-            'month' => false,
-            'default' => true
-        ];
-        //$options['unselectAuto'] = false;
-        $options['unselectCancel'] = 'body';
-        $options['selectHelper'] = true;
-        $options['scrollTime'] = "08:00:00";
-        //$options['minTime'] = "08:00:00";
-        //$options['maxTime'] = "19:00:00";
-        $options['defaultTimedEventDuration'] = "00:15:00";
-
-        $options['dayClick'] = new JsExpression("function(date, jsEvent, view) {
-            if (view.name == 'month') {
-                calendar_{$id}.fullCalendar('gotoDate', date);
-                calendar_{$id}.fullCalendar('changeView', 'agendaWeek');
-            }
-        }");
-
-        $options['eventMouseover'] = new JsExpression("function(event, jsEvent, view) {
-            //console.log([this, event, jsEvent, view]);
-            //$(this).popover('show', {trigger: 'manual', content: 'ttt'});
-        }");
-
-        $options['select'] = new JsExpression("function(start, end, jsEvent, view) {
-				if (jsEvent) {
-				    calendar_{$id}.trigger('fullcalendar.select', [start, end]);
-                }
-        }");
-
-        $options['eventRender'] = new JsExpression("function(event, element) {
-                element.popover({
-                    content: event.title,
-                    trigger: 'hover'
-                });
-        }");
 
         $options['loading'] = new JsExpression("function(isLoading, view ) {
                 $('#container_{$id}').find('.fullcalendar-loading').toggle(isLoading);
