@@ -44,7 +44,7 @@ class FullCalendarAsset extends AssetBundle
      */
     public function init()
     {
-        $this->css = ['fullcalendar.css', 'fullcalendar.print.css'];
+        $this->css = ['fullcalendar.css', 'custom.css'];
         $this->sourcePath = __DIR__ . '/../assets';
         parent::init();
     }
@@ -60,6 +60,8 @@ class FullCalendarAsset extends AssetBundle
         if ($this->googleCalendar) {
             $this->js[] = "gcal.js";
         }
+
+        $view->registerCssFile($this->baseUrl . '/' . 'fullcalendar.print.css', [], ['media' => 'print']);
 
         parent::registerAssetFiles($view);
     }

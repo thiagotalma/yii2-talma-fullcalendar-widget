@@ -8,7 +8,6 @@
 
 namespace talma\widgets;
 
-use yii\base\InvalidConfigException;
 use yii\bootstrap\Widget;
 use yii\helpers\Html;
 use yii\helpers\Json;

@@ -1,0 +1,23 @@
+.fullcalendar {
+    width: 100%;
+    margin: 20px auto;
+}
+
+.fullcalendar-loading {
+    background-color: #c91618;
+    position: absolute;
+    z-index: 99999;
+    top: 85px;
+    right: 35px;
+    font-size: 0.8em;
+    color: #FFFFFF;
+    padding: 1px 5px;
+}
+
+.fc-event {
+    color: #000000;
+}
+
+.fc-event-vert .fc-event-time {
+    font: bold 10px Arial,sans-serif;
+}
