@@ -44,7 +44,7 @@ class FullCalendarAsset extends AssetBundle
      */
     public function init()
     {
-        $this->css = ['fullcalendar.css', 'custom.css'];
+        $this->css = ['fullcalendar.css'];
         $this->sourcePath = __DIR__ . '/../assets';
         parent::init();
     }

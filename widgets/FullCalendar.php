@@ -60,7 +60,7 @@ class FullCalendar extends Widget
         Html::addCssClass($this->options, 'fullcalendar');
 
         echo '<div id="container_' . $this->options['id'] . '">';
-        echo '<div class="fullcalendar-loading" style="display: none;">' . $this->loading . '</div>';
+        echo '<div class="fc-loading" style="display: none;">' . $this->loading . '</div>';
         echo Html::tag('div', '', $this->options);
         echo '</div>';
     }
@@ -94,7 +94,7 @@ class FullCalendar extends Widget
         $id = $this->options['id'];
 
         $options['loading'] = new JsExpression("function(isLoading, view ) {
-                $('#container_{$id}').find('.fullcalendar-loading').toggle(isLoading);
+                $('#container_{$id}').find('.fc-loading').toggle(isLoading);
         }");
 
         $options = array_merge($options, $this->config);
