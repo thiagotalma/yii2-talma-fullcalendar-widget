@@ -28,7 +28,7 @@ Usage
 Once the extension is installed, simply use it in your code by :
 
 ```php
-<?= \talma\widget\FullCalendar::widget([
+<?= \talma\widgets\FullCalendar::widget([
     'googleCalendar' => true,  // If the plugin displays a Google Calendar. Default false
     'loading' => 'Carregando...', // Text for loading alert. Default 'Loading...'
     'config' => [
