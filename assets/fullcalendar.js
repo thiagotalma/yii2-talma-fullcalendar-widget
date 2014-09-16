@@ -6860,6 +6860,7 @@ View.prototype = {
 		var _this = this;
 		var dropDate = null;
 		var dragListener;
+        var duration = _this.computeDraggedEventDuration(ev, ui);
 
 		if (this.opt('droppable')) { // only listen if this setting is on
 
@@ -6867,7 +6868,8 @@ View.prototype = {
 			dragListener = new DragListener(this.coordMap, {
 				cellOver: function(cell, date) {
 					dropDate = date;
-					_this.renderDrag(date);
+                    var end = duration ? date.clone().add(duration) : null;
+					_this.renderDrag(date, end);
 				},
 				cellOut: function() {
 					dropDate = null;
@@ -6886,6 +6888,23 @@ View.prototype = {
 			dragListener.startDrag(ev); // start listening immediately
 		}
 	},
+
+
+    // Calculates the duration of the event that was dragged.
+    computeDraggedEventDuration: function(ev, ui) {
+        var opt = this.opt('draggedEventDuration');
+        var duration = null;
+
+        if (opt) {
+            if (typeof opt === 'function') {
+                duration = opt(ev, ui);
+            }
+            else {
+                duration = opt;
+            }
+        }
+        return duration;
+    },
 
 
 	/* Selection
