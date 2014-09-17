@@ -61,7 +61,7 @@ class FullCalendarAsset extends AssetBundle
             $this->js[] = "gcal.js";
         }
 
-        $view->registerCssFile($this->baseUrl . '/' . 'fullcalendar.print.css', [], ['media' => 'print']);
+        $view->registerCssFile($this->baseUrl . '/' . 'fullcalendar.print.css', ['media' => 'print']);
 
         parent::registerAssetFiles($view);
     }
