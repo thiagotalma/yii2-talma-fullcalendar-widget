@@ -6860,7 +6860,6 @@ View.prototype = {
 		var _this = this;
 		var dropDate = null;
 		var dragListener;
-        var duration = _this.computeDraggedEventDuration(ev, ui);
 
 		if (this.opt('droppable')) { // only listen if this setting is on
 
@@ -6868,12 +6867,14 @@ View.prototype = {
 			dragListener = new DragListener(this.coordMap, {
 				cellOver: function(cell, date) {
 					dropDate = date;
-                    var end = duration ? date.clone().add(duration) : null;
+					var end = _this.computeDraggedEventEnd(ev, ui, date) || _this.view.calendar.getDefaultEventEnd(false, date);
 					_this.renderDrag(date, end);
+					_this.el.trigger('cellOver', [cell, date, end]);
 				},
 				cellOut: function() {
 					dropDate = null;
 					_this.destroyDrag();
+					_this.el.trigger('cellOut');
 				}
 			});
 
@@ -6890,21 +6891,24 @@ View.prototype = {
 	},
 
 
-    // Calculates the duration of the event that was dragged.
-    computeDraggedEventDuration: function(ev, ui) {
-        var opt = this.opt('draggedEventDuration');
-        var duration = null;
+	// Calculates the duration of the event that was dragged.
+	computeDraggedEventEnd: function(ev, ui, date) {
+		var opt = this.opt('draggedEventDuration');
+		var duration = null;
 
-        if (opt) {
-            if (typeof opt === 'function') {
-                duration = opt(ev, ui);
-            }
-            else {
-                duration = opt;
-            }
-        }
-        return duration;
-    },
+		if (opt) {
+			if (typeof opt === 'function') {
+				duration = opt(ev, ui);
+			}
+			else {
+				duration = opt;
+			}
+
+			return date.clone().add(duration);
+		}
+
+		return null;
+	},
 
 
 	/* Selection
@@ -7379,7 +7383,7 @@ function View(calendar) {
 				// range's first cell is hidden (we don't want isStart to be true).
 				var isStart = cellOffsetToDayOffset(segmentCellOffsetFirst) == rangeDayOffsetStart;
 				var isEnd = cellOffsetToDayOffset(segmentCellOffsetLast) + 1 == rangeDayOffsetEnd;
-				                                                   // +1 for comparing exclusively
+																   // +1 for comparing exclusively
 
 				segments.push({
 					row: row,
