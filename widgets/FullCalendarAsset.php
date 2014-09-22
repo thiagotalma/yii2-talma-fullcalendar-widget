@@ -22,12 +22,12 @@ class FullCalendarAsset extends AssetBundle
     /**
      * @inheritdoc
      */
-    public $depends = ['yii\web\JqueryAsset'];
+    public $depends = ['yii\jui\JuiAsset'];
 
     /**
      * @inheritdoc
      */
-    public $js = ['lib/jquery-ui.custom.min.js', 'lib/moment.min.js', 'fullcalendar.js'];
+    public $js = ['lib/moment.min.js', 'fullcalendar.js'];
 
     /**
      * @var string App language
