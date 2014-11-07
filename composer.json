@@ -16,6 +16,7 @@
         "yiisoft/yii2": "*",
         "yiisoft/yii2-jui": "*"
     },
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "talma\\": ""
