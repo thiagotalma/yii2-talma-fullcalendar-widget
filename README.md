@@ -1,6 +1,9 @@
 yii2-talma-fullcalendar-widget
 ===========
+
 Widget for Yii Framework 2.0 to use [FullCalendar](http://arshaw.com/fullcalendar)
+
+[![Latest Stable Version](https://poser.pugx.org/thiagotalma/yii2-fullcalendar/v/stable)](https://packagist.org/packages/thiagotalma/yii2-fullcalendar) [![Total Downloads](https://poser.pugx.org/thiagotalma/yii2-fullcalendar/downloads)](https://packagist.org/packages/thiagotalma/yii2-fullcalendar) [![Latest Unstable Version](https://poser.pugx.org/thiagotalma/yii2-fullcalendar/v/unstable)](https://packagist.org/packages/thiagotalma/yii2-fullcalendar) [![License](https://poser.pugx.org/thiagotalma/yii2-fullcalendar/license)](https://packagist.org/packages/thiagotalma/yii2-fullcalendar)
 
 Installation
 ------------
